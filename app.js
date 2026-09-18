@@ -1,45 +1,107 @@
 const messages = document.querySelector('#messages');
 const input = document.querySelector('#question');
-const welcome = 'Olá! Sou um assistente demonstrativo do projeto acadêmico. Posso explicar como analisar uma mensagem e procurar fontes. Não verifico notícias em tempo real. Por onde vamos começar?';
+const form = document.querySelector('#chat-form');
+const status = document.querySelector('#model-status');
+const controls = [...form.querySelectorAll('button'), ...document.querySelectorAll('.suggestions button')];
+const welcome = 'Olá! Sou o InspectorFakeNews. Posso ajudar a analisar uma mensagem e identificar o que precisa ser conferido. Uso uma IA local, sem consulta à internet: minhas respostas podem conter erros e não são uma verificação de fatos. Qual é sua dúvida?';
+let history = [];
+let activeRequest = null;
 
 function addMessage(text, user = false) {
   const bubble = document.createElement('div');
   bubble.className = user ? 'bubble user' : 'bubble';
   const author = document.createElement('strong');
-  author.textContent = user ? 'Você' : 'Assistente · demonstração';
-  bubble.append(author, document.createTextNode(text));
+  author.textContent = user ? 'Você' : 'InspectorFakeNews · IA local';
+  const content = document.createElement('span');
+  content.textContent = text;
+  bubble.append(author, content);
   messages.append(bubble);
   messages.scrollTop = messages.scrollHeight;
+  return { bubble, content };
 }
 
-function reply(question) {
-  const text = question.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (/fonte|buscar|referencia/.test(text)) return 'Para começar, procure publicações do Ministério da Saúde, da Fiocruz e da Organização Mundial da Saúde. Confira se a página realmente pertence à instituição, observe a data e procure a publicação original. Nesta demonstração, não consultei essas fontes nem avaliei uma notícia específica.';
-  if (/suspeita|recebi|mensagem|whatsapp/.test(text)) return 'Antes de repassar a mensagem, procure quem a escreveu, quando foi publicada e qual é a evidência apresentada. Expressões como “compartilhe antes que apaguem” são motivo para redobrar a atenção, mas não provam que o conteúdo é falso. Este protótipo não consegue verificar a mensagem por você.';
-  if (/identificar|fake|noticia|desinformacao/.test(text)) return 'Use este roteiro de leitura: 1. Identifique a autoria. 2. Confira a data e o contexto. 3. Procure a fonte original. 4. Compare com outras fontes confiáveis. 5. Se não conseguir confirmar, espere antes de compartilhar. Aparência profissional e muitas curtidas não comprovam uma informação.';
-  return 'Esta versão usa respostas predefinidas e não consegue avaliar essa afirmação ou dar orientação médica. Posso mostrar como identificar sinais de desinformação, procurar fontes ou analisar uma mensagem suspeita. Escolha uma das perguntas sugeridas para explorar a demonstração.';
+function setBusy(busy) {
+  controls.forEach(button => { button.disabled = busy; });
+  input.disabled = busy;
+  form.setAttribute('aria-busy', String(busy));
 }
 
-function send(text) {
+async function checkHealth() {
+  try {
+    const response = await fetch('/api/health', { signal: AbortSignal.timeout(6000) });
+    const data = await response.json();
+    status.textContent = data.ready ? `Local · ${data.model}` : data.message;
+  } catch {
+    status.textContent = 'Inicie python3 server.py e abra http://127.0.0.1:8002';
+  }
+}
+
+async function send(text) {
   const question = text.trim();
-  if (!question) return;
+  if (!question || activeRequest || question.length > 3000) return;
+  const controller = new AbortController();
+  activeRequest = controller;
+  const pendingHistory = [...history.slice(-12), { role: 'user', content: question }];
   addMessage(question, true);
-  addMessage(reply(question));
   input.value = '';
+  setBusy(true);
+  const pending = addMessage('Preparando resposta… O primeiro carregamento pode levar mais tempo.');
+  const timer = setTimeout(() => controller.abort(), 190000);
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: pendingHistory }), signal: controller.signal,
+    });
+    let data;
+    try { data = await response.json(); } catch { throw new Error('Abra o chat pelo servidor Python: http://127.0.0.1:8002.'); }
+    if (!response.ok) throw new Error(data.error || 'Não foi possível gerar a resposta.');
+    if (typeof data.message !== 'string' || !data.message.trim()) throw new Error('Resposta vazia do modelo.');
+    if (activeRequest !== controller) return;
+    pending.content.textContent = data.message;
+    history = [...pendingHistory, { role: 'assistant', content: data.message }];
+    status.textContent = `Local · ${data.model}`;
+  } catch (error) {
+    if (activeRequest !== controller) return;
+    pending.content.textContent = error.name === 'AbortError'
+      ? 'A resposta demorou demais. Tente novamente com uma mensagem menor.'
+      : error instanceof TypeError ? 'Sem conexão com o servidor. Execute python3 server.py.' : error.message;
+    pending.bubble.classList.add('error');
+    input.value = question;
+  } finally {
+    clearTimeout(timer);
+    if (activeRequest === controller) {
+      activeRequest = null;
+      setBusy(false);
+      input.focus();
+      messages.scrollTop = messages.scrollHeight;
+    }
+  }
 }
 
-document.querySelector('#chat-form').addEventListener('submit', event => {
+form.addEventListener('submit', event => {
   event.preventDefault();
   send(input.value);
-  input.focus();
+});
+input.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    form.requestSubmit();
+  }
 });
 document.querySelectorAll('.suggestions button').forEach(button => {
   button.addEventListener('click', () => send(button.textContent));
 });
 document.querySelector('#clear').addEventListener('click', () => {
+  const previous = activeRequest;
+  activeRequest = null;
+  previous?.abort();
+  history = [];
   messages.replaceChildren();
   input.value = '';
+  setBusy(false);
   addMessage(welcome);
   input.focus();
+  checkHealth();
 });
 addMessage(welcome);
+checkHealth();
