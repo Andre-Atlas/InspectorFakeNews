@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Combate às fake news | Protótipo acadêmico UnB</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar" aria-label="Menu principal">
+    <a class="side-brand" href="./"><span class="sus-mark">SUS<span>+</span></span><span>Meu<br><strong>SUS</strong><br>Digital<small>PROTÓTIPO ACADÊMICO</small></span></a>
+    <nav class="side-nav" aria-label="Navegação principal">
+      <a href="#inicio"><span aria-hidden="true">⌂</span> Início</a>
+      <a href="#explorar"><span aria-hidden="true">▦</span> Aplicações</a>
+      <a href="#explorar"><span aria-hidden="true">✚</span> Minha saúde</a>
+      <a class="selected" href="#conteudo" aria-current="page"><span aria-hidden="true">▤</span> Conteúdos</a>
+      <a href="#perfil"><span aria-hidden="true">♙</span> Meu perfil</a>
+      <a href="#sobre"><span aria-hidden="true">?</span> Dúvidas frequentes</a>
+    </nav>
+    <div class="side-bottom">Projeto UnB<small>Sem vínculo oficial com o SUS</small></div>
+  </aside>
+  <div class="academic">PROJETO ACADÊMICO · UnB <span>Ambiente demonstrativo, sem vínculo com o Ministério da Saúde</span></div>
+  <header id="inicio"><p class="greeting">Olá, <strong>Estudante</strong></p><div class="profile" id="perfil"><span><strong>PERFIL DE DEMONSTRAÇÃO</strong><small>Dados fictícios · Projeto acadêmico</small></span><span class="avatar" aria-hidden="true">♙</span></div></header>
+  <main>
+    <nav id="conteudo" aria-label="Você está aqui"><a href="./">Início</a><span>›</span><span>Combate às fake news</span></nav>
+    <section class="hero"><div><span class="eyebrow">SAÚDE COM INFORMAÇÃO</span><h1>Antes de compartilhar,<br><em>vamos conferir?</em></h1><p>Informação de qualidade também é cuidado. Aprenda a reconhecer conteúdos duvidosos e converse com nosso assistente de demonstração.</p><a class="primary" href="#conversa">Conversar com o assistente <span>↗</span></a></div><div class="hero-art" aria-hidden="true"><div class="orbit"></div><div class="message-card"><span class="check">✓</span><strong>Mais informação.<br>Mais cuidado.</strong><div class="art-line"></div><div class="art-line short"></div><span class="art-tag">Confira antes de compartilhar</span></div><span class="floating">? → ✓</span></div></section>
+    <section id="explorar" class="steps" aria-labelledby="steps-title"><div class="section-heading"><span class="eyebrow">UM MINUTO FAZ DIFERENÇA</span><h2 id="steps-title">Três passos para uma leitura crítica</h2></div><div class="cards"><article><span class="number">01</span><h3>Confira a origem</h3><p>Quem publicou? Procure a autoria e a fonte original da informação.</p></article><article><span class="number">02</span><h3>Leia além do título</h3><p>Observe a data, o contexto e se o conteúdo apresenta referências verificáveis.</p></article><article><span class="number">03</span><h3>Faça uma pausa</h3><p>Uma mensagem urgente ou alarmante merece atenção antes de ser repassada.</p></article></div></section>
+    <section class="chat-section" id="conversa"><div class="chat-intro"><span class="eyebrow">VAMOS CONVERSAR</span><h2>Uma dúvida é um<br>bom começo.</h2><p>Explore como analisar uma mensagem suspeita com nosso assistente educativo.</p><div class="notice"><strong>Como funciona esta demonstração</strong><p>As respostas são predefinidas. O assistente não usa IA, não consulta a internet e não determina se uma alegação de saúde é verdadeira.</p></div><p class="privacy">Não envie nome, CPF ou informações pessoais de saúde. As mensagens ficam apenas nesta página e desaparecem ao recarregar.</p></div><div class="chat"><div class="chat-top"><span class="bot-icon" aria-hidden="true">✦</span><div><h3>Assistente de informação</h3><span>Demonstração educativa</span></div><button id="clear" type="button">Limpar</button></div><div id="messages" class="messages" role="log" aria-label="Conversa com o assistente" aria-live="polite"></div><div class="suggestions" aria-label="Perguntas sugeridas"><button type="button">Como identificar fake news?</button><button type="button">Onde buscar fontes?</button><button type="button">Recebi uma mensagem suspeita</button></div><form id="chat-form"><label class="sr-only" for="question">Sua pergunta</label><input id="question" name="question" placeholder="Digite sua dúvida…" maxlength="1000" autocomplete="off" required><button type="submit" aria-label="Enviar mensagem">↑</button></form><div class="chat-foot">Respostas demonstrativas · Não oferece orientação médica</div></div></section>
+    <section id="sobre" class="about"><span class="eyebrow">SOBRE O PROJETO</span><h2>Tecnologia a favor da informação.</h2><p>Protótipo acadêmico desenvolvido para apresentação na Universidade de Brasília. Interface independente para explorar o uso de um chatbot educativo no combate à desinformação em saúde. Sem autenticação gov.br ou acesso a dados do SUS.</p></section>
+  </main><footer><strong>Saúde em foco</strong><span>Projeto acadêmico · UnB · Interface demonstrativa</span></footer><script src="app.js"></script>
+</body>
+</html>
