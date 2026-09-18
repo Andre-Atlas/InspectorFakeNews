@@ -1,6 +1,6 @@
 # Saúde em foco — projeto acadêmico
 
-Protótipo independente para apresentação na UnB, sem vínculo oficial com o SUS. Layout provisório; não é uma reprodução fiel da página original.
+Protótipo independente para apresentação na Eldorado, sem vínculo oficial com o SUS. Layout provisório; não é uma reprodução fiel da página original.
 
 Abra `index.html` diretamente no navegador. Não há dependências externas ou instalação necessária.
 
