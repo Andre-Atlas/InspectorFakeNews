@@ -52,6 +52,13 @@ def validate_messages(data):
 
 
 class Handler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        # Um terminal encerrado não deve impedir o envio da resposta HTTP.
+        try:
+            super().log_message(format, *args)
+        except OSError:
+            pass
+
     def json_response(self, status, data):
         body = json.dumps(data, ensure_ascii=False).encode()
         self.send_response(status)
