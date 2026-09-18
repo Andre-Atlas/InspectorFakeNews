@@ -1,20 +1,43 @@
-# Saúde em foco — projeto acadêmico
+# InspectorFakeNews — projeto acadêmico
 
-Protótipo independente para apresentação na Eldorado, sem vínculo oficial com o SUS. Layout provisório; não é uma reprodução fiel da página original.
+Chatbot educativo sobre desinformação em saúde. Interface independente, sem vínculo oficial com o SUS. Desenvolvido para apresentação na Eldorado.
 
-Abra `index.html` diretamente no navegador. Não há dependências externas ou instalação necessária.
+## Executar localmente
 
-Para servir a página localmente, execute na raiz do projeto:
+Requer Python 3.10+ e [Ollama](https://ollama.com/download). Sem pacotes pip, chave de API ou serviços pagos. O processamento usa os recursos do computador.
+
+1. Inicie o Ollama pelo aplicativo ou, em um terminal, com `ollama serve`.
+2. Se o modelo ainda não estiver instalado, execute `ollama pull qwen2.5:7b` (download de aproximadamente 4,7 GB, uma única vez).
+3. Na pasta do projeto, execute:
 
 ```bash
-python3 -m http.server 8001 --bind 127.0.0.1
+python3 server.py
 ```
 
-Acesse http://127.0.0.1:8001/. Se esse servidor já estiver aberto nesta pasta, basta acessar o endereço, sem iniciar outro servidor.
+4. Abra **http://127.0.0.1:8002**.
 
-O chatbot usa respostas predefinidas locais. Não usa IA, não consulta fontes em tempo real e não avalia alegações médicas. Nenhuma mensagem é enviada ou persistida. Recarregar ou usar “Limpar” remove a conversa.
+Use o servidor `server.py`, não `python3 -m http.server` nem o Live Server: eles não executam a API do chatbot. Não é necessário encerrar o servidor antigo da porta 8001.
 
-Arquivos: `index.html` (estrutura), `styles.css` (visual responsivo), `app.js` (conversa demonstrativa).
+Outra porta: `python3 server.py --port 8003`.
+Outro modelo local instalado: `OLLAMA_MODEL=nome:tag python3 server.py`.
+
+## Organização
+
+- `index.html`: página e chat.
+- `styles.css`: aparência responsiva.
+- `app.js`: conversa, histórico, espera e tratamento de falhas.
+- `server.py`: arquivos públicos e API local que conversa com o Ollama.
+
+A conversa existe apenas em memória. O navegador envia as últimas seis trocas e a nova pergunta ao servidor local. Limpar ou recarregar reinicia o histórico. Limpar cancela a espera no navegador; o Ollama pode continuar a geração já iniciada até concluir. O servidor não salva as mensagens. Os logs HTTP registram rotas e códigos, não o corpo das conversas.
+
+## Limites desta etapa
+
+O modelo gera respostas, mas não consulta a internet nem uma base documental. Não se deve apresentar suas respostas como checagem factual ou orientação médica. O próximo passo para checagens com evidências é integrar fontes verificáveis e exibir as referências realmente consultadas.
+
+## Referências técnicas
+
+- [API de conversa do Ollama](https://docs.ollama.com/api/chat)
+- [Modelo Qwen2.5](https://ollama.com/library/qwen2.5)
 
 # 👤 Autor
 
